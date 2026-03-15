@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smartecom-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-smartecom}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-smartecom_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-smartecom}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-smartecom}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./packages/api
+      dockerfile: Dockerfile
+    container_name: smartecom-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-smartecom}:${POSTGRES_PASSWORD:-smartecom_secret}@postgres:5432/${POSTGRES_DB:-smartecom}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SHOPIFY_WEBHOOK_SECRET: ${SHOPIFY_WEBHOOK_SECRET}
+      CORS_ORIGIN: http://localhost:3001
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./packages/api/uploads:/app/uploads
+
+  dashboard:
+    build:
+      context: ./packages/dashboard
+      dockerfile: Dockerfile
+    container_name: smartecom-dashboard
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+    ports:
+      - '3001:3001'
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: smartecom-n8n
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: 'true'
+      N8N_BASIC_AUTH_USER: ${N8N_USER:-admin}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD:-admin123}
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB:-smartecom}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER:-smartecom}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:-smartecom_secret}
+      WEBHOOK_URL: http://localhost:5678
+      N8N_HOST: 0.0.0.0
+      N8N_PORT: 5678
+    ports:
+      - '5678:5678'
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./workflows:/home/node/.n8n/workflows-import
+
+volumes:
+  postgres_data:
+  n8n_data:

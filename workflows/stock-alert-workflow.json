@@ -1,0 +1,222 @@
+{
+  "name": "SmartEcom: Stock Alert → AI Copy → Email Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "shopify-inventory-update",
+        "options": {
+          "responseMode": "responseNode"
+        }
+      },
+      "id": "inventory-webhook",
+      "name": "Shopify Inventory Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "shopify-inventory-update"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "{\"received\":true}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "respond-shopify",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [470, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract inventory data from Shopify webhook\n// Shopify sends: { inventory_item_id, location_id, available, updated_at }\nconst body = $input.first().json.body;\n\nconst stock = parseInt(body.available, 10);\nconst THRESHOLD = parseInt(process.env.STOCK_THRESHOLD || '10', 10);\n\nreturn [{\n  json: {\n    inventory_item_id: body.inventory_item_id,\n    location_id: body.location_id,\n    available: stock,\n    threshold: THRESHOLD,\n    is_low: !isNaN(stock) && stock <= THRESHOLD,\n    updated_at: body.updated_at,\n    raw: body\n  }\n}];"
+      },
+      "id": "extract-inventory",
+      "name": "Extract Inventory Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [470, 380]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.is_low }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ]
+        }
+      },
+      "id": "is-low-stock",
+      "name": "Is Low Stock?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [690, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SMARTECOM_API_URL || 'http://localhost:3000' }}/api/alerts/webhook/shopify",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Shopify-Topic",
+              "value": "inventory_levels/update"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify($('Extract Inventory Data').item.json.raw) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "call-alert-api",
+      "name": "Generate Alert Copy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [910, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "// No alert needed — stock is above threshold\nconst inventory = $input.first().json;\nreturn [{\n  json: {\n    skipped: true,\n    reason: `Stock at ${inventory.available} is above threshold of ${inventory.threshold}`,\n    available: inventory.available\n  }\n}];"
+      },
+      "id": "no-alert-needed",
+      "name": "No Alert Needed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [910, 480]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.triggered }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ]
+        }
+      },
+      "id": "was-alert-triggered",
+      "name": "Alert Triggered?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1130, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build email notification content from AI-generated copy\nconst alertData = $input.first().json;\nconst alert = alertData.alert || {};\nconst copy = alertData.copy || {};\n\nconst alertTypeLabels = {\n  'out_of_stock': '🚨 OUT OF STOCK',\n  'critical_low': '🔴 CRITICAL LOW STOCK',\n  'low_stock': '🟡 LOW STOCK ALERT'\n};\n\nconst typeLabel = alertTypeLabels[alert.alert_type] || '⚠️ STOCK ALERT';\n\nreturn [{\n  json: {\n    to: process.env.ALERT_EMAIL_TO || 'alerts@yourstore.com',\n    subject: copy.email_subject || `${typeLabel}: ${alert.product_name}`,\n    product_name: alert.product_name,\n    current_stock: alert.current_stock,\n    threshold: alert.threshold,\n    alert_type: alert.alert_type,\n    email_body: copy.email_body,\n    email_preheader: copy.email_preheader,\n    sms_copy: copy.sms,\n    push_copy: copy.push_notification,\n    internal_alert: copy.internal_alert,\n    recommended_action: copy.recommended_action,\n    type_label: typeLabel,\n    dashboard_url: process.env.DASHBOARD_URL || 'http://localhost:3001/alerts'\n  }\n}];"
+      },
+      "id": "build-notification",
+      "name": "Build Email Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1350, 180]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.SMTP_USER || 'alerts@yourstore.com' }}",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html>\n<head><style>\n  body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; }\n  .header { background: #dc2626; color: white; padding: 20px; border-radius: 8px 8px 0 0; }\n  .content { padding: 24px; background: #fff; }\n  .stock-bar { background: #fee2e2; border-radius: 8px; padding: 16px; margin: 16px 0; }\n  .copy-section { background: #f8fafc; border-left: 3px solid #3b82f6; padding: 12px 16px; margin: 12px 0; }\n  .footer { padding: 16px; background: #f1f5f9; border-radius: 0 0 8px 8px; font-size: 12px; color: #64748b; }\n  .btn { display: inline-block; background: #2563eb; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; }\n</style></head>\n<body>\n<div class='header'>\n  <h2 style='margin:0'>{{ $json.type_label }}</h2>\n  <p style='margin:8px 0 0'>{{ $json.product_name }}</p>\n</div>\n<div class='content'>\n  <div class='stock-bar'>\n    <p style='margin:0;font-size:14px;color:#991b1b'>\n      <strong>Current Stock: {{ $json.current_stock }} units</strong> (Threshold: {{ $json.threshold }})\n    </p>\n  </div>\n  \n  <h3>AI-Generated Marketing Copy</h3>\n  \n  <div class='copy-section'>\n    <p style='font-size:11px;color:#64748b;margin:0 0 4px;text-transform:uppercase;font-weight:bold'>Email</p>\n    <p style='margin:0;font-weight:bold'>{{ $json.subject }}</p>\n    <p style='margin:8px 0 0;color:#374151'>{{ $json.email_body }}</p>\n  </div>\n  \n  <div class='copy-section'>\n    <p style='font-size:11px;color:#64748b;margin:0 0 4px;text-transform:uppercase;font-weight:bold'>SMS</p>\n    <p style='margin:0;color:#374151'>{{ $json.sms_copy }}</p>\n  </div>\n  \n  <div class='copy-section'>\n    <p style='font-size:11px;color:#64748b;margin:0 0 4px;text-transform:uppercase;font-weight:bold'>Push Notification</p>\n    <p style='margin:0;color:#374151'>{{ $json.push_copy }}</p>\n  </div>\n  \n  <div style='margin-top:16px;padding:12px;background:#eff6ff;border-radius:6px'>\n    <p style='margin:0;font-size:13px;color:#1e40af'><strong>Recommended Action:</strong> {{ $json.recommended_action }}</p>\n  </div>\n  \n  <p style='margin-top:24px'>\n    <a href='{{ $json.dashboard_url }}' class='btn'>View in Dashboard →</a>\n  </p>\n</div>\n<div class='footer'>\n  This alert was generated automatically by SmartEcom AI Pipeline.\n</div>\n</body></html>",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Send Email Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1570, 180]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "slackApi",
+        "resource": "message",
+        "operation": "post",
+        "channel": "#stock-alerts",
+        "text": "={{ $('Build Email Notification').item.json.type_label + ': ' + $('Build Email Notification').item.json.product_name }}\n\n*Stock:* {{ $('Build Email Notification').item.json.current_stock }} units (threshold: {{ $('Build Email Notification').item.json.threshold }})\n\n*Email Subject:* {{ $('Build Email Notification').item.json.subject }}\n*SMS:* {{ $('Build Email Notification').item.json.sms_copy }}\n\n*Action:* {{ $('Build Email Notification').item.json.recommended_action }}\n\n<{{ $('Build Email Notification').item.json.dashboard_url }}|View in Dashboard →>",
+        "otherOptions": {}
+      },
+      "id": "notify-slack-stock",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [1570, 380]
+    }
+  ],
+  "connections": {
+    "Shopify Inventory Webhook": {
+      "main": [
+        [
+          { "node": "Respond 200", "type": "main", "index": 0 },
+          { "node": "Extract Inventory Data", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Extract Inventory Data": {
+      "main": [
+        [{ "node": "Is Low Stock?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Is Low Stock?": {
+      "main": [
+        [{ "node": "Generate Alert Copy", "type": "main", "index": 0 }],
+        [{ "node": "No Alert Needed", "type": "main", "index": 0 }]
+      ]
+    },
+    "Generate Alert Copy": {
+      "main": [
+        [{ "node": "Alert Triggered?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Alert Triggered?": {
+      "main": [
+        [{ "node": "Build Email Notification", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Build Email Notification": {
+      "main": [
+        [
+          { "node": "Send Email Alert", "type": "main", "index": 0 },
+          { "node": "Notify Slack", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true
+  },
+  "staticData": null,
+  "meta": {
+    "description": "Processes Shopify inventory_levels/update webhooks. When stock drops below threshold, generates AI-powered urgency copy (email, SMS, push, internal) and sends email + Slack notifications to the operations team."
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "tags": [
+    { "name": "smartecom" },
+    { "name": "inventory" },
+    { "name": "alerts" }
+  ]
+}

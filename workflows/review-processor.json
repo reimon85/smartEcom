@@ -1,0 +1,266 @@
+{
+  "name": "SmartEcom: Review Processor with Human-in-the-Loop",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "shopify-review-created",
+        "options": {}
+      },
+      "id": "review-webhook",
+      "name": "Shopify Review Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 500],
+      "webhookId": "shopify-review-created"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SMARTECOM_API_URL || 'http://localhost:3000' }}/api/reviews/pending",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "fetch-pending-reviews",
+      "name": "Fetch Pending Reviews",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "content": "={{ $json.body }}",
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            },
+            {
+              "leftValue": "={{ ($json.data || []).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "larger"
+              }
+            }
+          ]
+        }
+      },
+      "id": "has-pending",
+      "name": "Has Pending Reviews?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process incoming Shopify review webhook\nconst body = $input.first().json.body;\n\nreturn [{\n  json: {\n    content: body.body || body.content || body.text,\n    rating: parseInt(body.rating) || parseInt(body.score) || 5,\n    reviewer_name: body.author || body.reviewer_name || 'Customer',\n    shopify_product_id: String(body.product_id || body.productId || '')\n  }\n}];"
+      },
+      "id": "extract-review",
+      "name": "Extract Review Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [470, 500]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SMARTECOM_API_URL || 'http://localhost:3000' }}/api/reviews/analyze",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "analyze-review",
+      "name": "Analyze Review + Generate Response",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [690, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split pending reviews array into individual items for processing\nconst response = $input.first().json;\nconst reviews = response.data || [];\n\nif (reviews.length === 0) return [];\n\nreturn reviews.map(review => ({ json: review }));"
+      },
+      "id": "split-reviews",
+      "name": "Split Pending Reviews",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [910, 300]
+    },
+    {
+      "parameters": {
+        "amount": 300
+      },
+      "id": "wait-for-approval",
+      "name": "Wait 5 Minutes for Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [910, 500],
+      "webhookId": "review-approval-wait"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SMARTECOM_API_URL || 'http://localhost:3000' }}/api/reviews/pending",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "check-approval-status",
+      "name": "Check Approval Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1130, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Notify team about pending reviews awaiting approval\nconst pendingReviews = $input.first().json.data || [];\nconst count = pendingReviews.length;\n\nif (count === 0) return [{ json: { message: 'No pending reviews', count: 0 } }];\n\n// Build notification summary\nconst sentimentCounts = pendingReviews.reduce((acc, r) => {\n  acc[r.sentiment] = (acc[r.sentiment] || 0) + 1;\n  return acc;\n}, {});\n\nconst dashboardUrl = process.env.DASHBOARD_URL || 'http://localhost:3001/reviews';\n\nreturn [{\n  json: {\n    count,\n    sentimentCounts,\n    dashboardUrl,\n    message: `${count} review response(s) awaiting your approval in SmartEcom Dashboard.`,\n    urgentCount: sentimentCounts.negative || 0\n  }\n}];"
+      },
+      "id": "build-notification",
+      "name": "Build Approval Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1130, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "larger"
+              }
+            }
+          ]
+        }
+      },
+      "id": "should-notify",
+      "name": "Should Notify?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1350, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "slackApi",
+        "resource": "message",
+        "operation": "post",
+        "channel": "#ecommerce-ops",
+        "text": "=*SmartEcom Review Queue* — {{ $json.count }} response(s) awaiting approval\n\n{{ $json.urgentCount > 0 ? ':rotating_light: ' + $json.urgentCount + ' negative review(s) need urgent attention!' : '' }}\n\nSentiment breakdown:\n• Positive: {{ $json.sentimentCounts.positive || 0 }}\n• Neutral: {{ $json.sentimentCounts.neutral || 0 }}\n• Negative: {{ $json.sentimentCounts.negative || 0 }}\n\n<{{ $json.dashboardUrl }}|Open Review Queue →>",
+        "otherOptions": {}
+      },
+      "id": "notify-slack",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [1570, 300]
+    }
+  ],
+  "connections": {
+    "Every Hour": {
+      "main": [
+        [{ "node": "Fetch Pending Reviews", "type": "main", "index": 0 }]
+      ]
+    },
+    "Shopify Review Webhook": {
+      "main": [
+        [{ "node": "Extract Review Data", "type": "main", "index": 0 }]
+      ]
+    },
+    "Fetch Pending Reviews": {
+      "main": [
+        [{ "node": "Has Pending Reviews?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Has Pending Reviews?": {
+      "main": [
+        [{ "node": "Split Pending Reviews", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Extract Review Data": {
+      "main": [
+        [{ "node": "Analyze Review + Generate Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Analyze Review + Generate Response": {
+      "main": [
+        [{ "node": "Wait 5 Minutes for Approval", "type": "main", "index": 0 }]
+      ]
+    },
+    "Split Pending Reviews": {
+      "main": [
+        [{ "node": "Build Approval Notification", "type": "main", "index": 0 }]
+      ]
+    },
+    "Wait 5 Minutes for Approval": {
+      "main": [
+        [{ "node": "Check Approval Status", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Approval Notification": {
+      "main": [
+        [{ "node": "Should Notify?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Should Notify?": {
+      "main": [
+        [{ "node": "Notify Slack", "type": "main", "index": 0 }],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true
+  },
+  "staticData": null,
+  "meta": {
+    "description": "Processes customer reviews with AI sentiment analysis and response generation. Implements human-in-the-loop approval: reviews are analyzed and staged for human approval before publishing. Sends Slack notifications for pending approvals."
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "tags": [
+    { "name": "smartecom" },
+    { "name": "reviews" },
+    { "name": "human-in-the-loop" }
+  ]
+}

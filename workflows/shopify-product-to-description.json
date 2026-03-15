@@ -1,0 +1,246 @@
+{
+  "name": "SmartEcom: Shopify Product → AI Description",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "shopify-product-created",
+        "options": {
+          "responseMode": "responseNode"
+        }
+      },
+      "id": "trigger-shopify-webhook",
+      "name": "Shopify Product Created Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "shopify-product-created"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "{\"success\":true}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "respond-to-shopify",
+      "name": "Respond 200 to Shopify",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [450, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and normalize product data from Shopify webhook payload\nconst body = $input.first().json.body;\n\nconst product = body;\n\n// Build attributes object from Shopify product fields\nconst attributes = {};\n\nif (product.vendor) attributes.brand = product.vendor;\nif (product.product_type) attributes.type = product.product_type;\nif (product.tags) attributes.tags = product.tags;\n\n// Extract from first variant\nif (product.variants && product.variants[0]) {\n  const v = product.variants[0];\n  if (v.weight) attributes.weight = `${v.weight} ${v.weight_unit || 'lb'}`;\n  if (v.price) attributes.price = `$${v.price}`;\n}\n\n// Extract options (size, color, etc.)\nif (product.options) {\n  product.options.forEach(opt => {\n    if (opt.name && opt.values) {\n      attributes[opt.name.toLowerCase()] = opt.values.join(', ');\n    }\n  });\n}\n\nreturn [{\n  json: {\n    name: product.title,\n    shopify_id: String(product.id),\n    category: product.product_type || undefined,\n    attributes\n  }\n}];"
+      },
+      "id": "extract-product-data",
+      "name": "Extract Product Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SMARTECOM_API_URL || 'http://localhost:3000' }}/api/descriptions/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "call-description-api",
+      "name": "Generate AI Description",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [670, 380]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ]
+        }
+      },
+      "id": "check-success",
+      "name": "Check API Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [890, 380]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://{{ $env.SHOPIFY_SHOP_DOMAIN }}/admin/api/{{ $env.SHOPIFY_API_VERSION || '2024-01' }}/products/{{ $('Extract Product Data').item.json.shopify_id }}.json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Shopify-Access-Token",
+              "value": "={{ $env.SHOPIFY_ACCESS_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify({ product: { id: $('Extract Product Data').item.json.shopify_id, body_html: $('Generate AI Description').item.json.data.full_description, title: $('Generate AI Description').item.json.data.title, tags: ($('Generate AI Description').item.json.data.keywords || []).join(',') } }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "update-shopify-product",
+      "name": "Update Shopify Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1110, 280]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SMARTECOM_API_URL || 'http://localhost:3000' }}/api/metrics/update",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={\"descriptions\": 1, \"tokens\": {{ $('Generate AI Description').item.json.data.tokens?.total || 0 }}, \"time_saved\": 14}",
+        "options": {}
+      },
+      "id": "log-metrics",
+      "name": "Log to Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1330, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log the error for debugging\nconst error = $input.first().json;\nconsole.error('Description generation failed:', JSON.stringify(error));\nreturn [{ json: { error: true, message: error.error || 'Unknown error' } }];"
+      },
+      "id": "handle-error",
+      "name": "Log Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1110, 480]
+    }
+  ],
+  "connections": {
+    "Shopify Product Created Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 to Shopify",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Product Data": {
+      "main": [
+        [
+          {
+            "node": "Generate AI Description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate AI Description": {
+      "main": [
+        [
+          {
+            "node": "Check API Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check API Success": {
+      "main": [
+        [
+          {
+            "node": "Update Shopify Product",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Shopify Product": {
+      "main": [
+        [
+          {
+            "node": "Log to Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "description": "Automatically generates SEO-optimized product descriptions when a new product is created in Shopify. Calls the SmartEcom API and updates the Shopify product with the AI-generated content."
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 0,
+  "tags": [
+    { "name": "smartecom" },
+    { "name": "shopify" },
+    { "name": "descriptions" }
+  ]
+}

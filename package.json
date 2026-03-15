@@ -1,0 +1,22 @@
+{
+  "name": "smartecom",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=packages/api\" \"npm run dev --workspace=packages/dashboard\"",
+    "dev:api": "npm run dev --workspace=packages/api",
+    "dev:dashboard": "npm run dev --workspace=packages/dashboard",
+    "migrate": "npm run migrate --workspace=packages/api",
+    "seed": "npm run seed --workspace=packages/api",
+    "build": "npm run build --workspace=packages/dashboard",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
