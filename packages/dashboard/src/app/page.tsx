@@ -57,8 +57,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Pipeline de Automatización IA</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Pipeline de Automatización IA</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Métricas en tiempo real de tu e-commerce automatizado
           </p>
         </div>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
 
       {/* Today's KPIs */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
+        <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">
           Hoy
         </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -185,7 +185,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ROI Widget */}
         <div className="card p-6 space-y-4 col-span-1">
-          <h3 className="font-semibold text-slate-800">Calculadora de ROI</h3>
+          <h3 className="font-semibold text-slate-800 dark:text-slate-100">Calculadora de ROI</h3>
           {roi ? (
             <>
               <div className="space-y-3">
@@ -239,7 +239,7 @@ export default function DashboardPage() {
 
         {/* Activity Feed */}
         <div className="card p-6 col-span-2">
-          <h3 className="font-semibold text-slate-800 mb-4">Actividad Reciente</h3>
+          <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-4">Actividad Reciente</h3>
           <ActivityFeed
             items={metrics?.recentActivity || []}
             loading={loading}
@@ -250,7 +250,7 @@ export default function DashboardPage() {
       {/* History Chart */}
       {history.length > 0 && (
         <div className="card p-6">
-          <h3 className="font-semibold text-slate-800 mb-6">Actividad — Últimos 14 Días</h3>
+          <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-6">Actividad — Últimos 14 Días</h3>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={history} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />

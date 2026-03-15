@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,8 +18,8 @@ const navItems = [
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-slate-50">
+    <html lang="es" suppressHydrationWarning>
+      <body className="min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="flex min-h-screen">
           {/* Sidebar */}
           <aside className="w-64 bg-slate-900 text-white flex flex-col flex-shrink-0">
@@ -35,6 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
 
             <nav className="flex-1 p-4 space-y-1">
+              <div className="flex justify-end mb-2 px-1">
+                <ThemeToggle />
+              </div>
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -60,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </aside>
 
           {/* Main content */}
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto dark:bg-slate-900">
             <div className="p-8 max-w-7xl">{children}</div>
           </main>
         </div>
