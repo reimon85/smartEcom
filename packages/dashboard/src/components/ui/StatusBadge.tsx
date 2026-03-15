@@ -25,79 +25,79 @@ interface StatusBadgeProps {
 
 const statusConfig: Record<string, { classes: string; dot: string; defaultLabel: string }> = {
   positive: {
-    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
     dot: 'bg-emerald-500',
     defaultLabel: 'Positive',
   },
   neutral: {
-    classes: 'bg-amber-50 text-amber-700 border border-amber-200',
+    classes: 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
     dot: 'bg-amber-500',
     defaultLabel: 'Neutral',
   },
   negative: {
-    classes: 'bg-red-50 text-red-700 border border-red-200',
+    classes: 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
     dot: 'bg-red-500',
     defaultLabel: 'Negative',
   },
   pending: {
-    classes: 'bg-blue-50 text-blue-700 border border-blue-200',
+    classes: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
     dot: 'bg-blue-500',
     defaultLabel: 'Pending',
   },
   approved: {
-    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
     dot: 'bg-emerald-500',
     defaultLabel: 'Approved',
   },
   rejected: {
-    classes: 'bg-red-50 text-red-700 border border-red-200',
+    classes: 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
     dot: 'bg-red-500',
     defaultLabel: 'Rejected',
   },
   running: {
-    classes: 'bg-blue-50 text-blue-700 border border-blue-200',
+    classes: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
     dot: 'bg-blue-500 animate-pulse',
     defaultLabel: 'Running',
   },
   completed: {
-    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
     dot: 'bg-emerald-500',
     defaultLabel: 'Completed',
   },
   partial: {
-    classes: 'bg-amber-50 text-amber-700 border border-amber-200',
+    classes: 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
     dot: 'bg-amber-500',
     defaultLabel: 'Partial',
   },
   failed: {
-    classes: 'bg-red-50 text-red-700 border border-red-200',
+    classes: 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
     dot: 'bg-red-500',
     defaultLabel: 'Failed',
   },
   low_stock: {
-    classes: 'bg-amber-50 text-amber-700 border border-amber-200',
+    classes: 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
     dot: 'bg-amber-500',
     defaultLabel: 'Low Stock',
   },
   critical_low: {
-    classes: 'bg-red-50 text-red-700 border border-red-200',
+    classes: 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
     dot: 'bg-red-500 animate-pulse',
     defaultLabel: 'Critical Low',
   },
   out_of_stock: {
-    classes: 'bg-red-100 text-red-800 border border-red-300',
+    classes: 'bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800',
     dot: 'bg-red-600',
     defaultLabel: 'Out of Stock',
   },
   active: {
-    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
     dot: 'bg-emerald-500',
     defaultLabel: 'Active',
   },
 };
 
 const fallback = {
-  classes: 'bg-slate-100 text-slate-600 border border-slate-200',
+  classes: 'bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600',
   dot: 'bg-slate-400',
   defaultLabel: 'Unknown',
 };

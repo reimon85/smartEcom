@@ -56,9 +56,9 @@ export default function BatchJobProgress({
 
   if (!job) {
     return (
-      <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 animate-pulse">
-        <div className="h-4 w-32 bg-slate-200 rounded mb-2" />
-        <div className="h-2 w-full bg-slate-200 rounded" />
+      <div className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600 animate-pulse">
+        <div className="h-4 w-32 bg-slate-200 dark:bg-slate-600 rounded mb-2" />
+        <div className="h-2 w-full bg-slate-200 dark:bg-slate-600 rounded" />
       </div>
     );
   }
@@ -66,11 +66,11 @@ export default function BatchJobProgress({
   const pct = job.progress || 0;
 
   return (
-    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3">
+    <div className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600 space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-sm font-medium text-slate-700">{label} #{job.id}</span>
-          <span className="ml-2 text-xs text-slate-500">
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{label} #{job.id}</span>
+          <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
             {job.processed} / {job.total} processed
           </span>
         </div>
@@ -78,7 +78,7 @@ export default function BatchJobProgress({
       </div>
 
       {/* Progress bar */}
-      <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+      <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2.5 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
             job.status === 'failed'
@@ -91,7 +91,7 @@ export default function BatchJobProgress({
         />
       </div>
 
-      <div className="flex items-center justify-between text-xs text-slate-500">
+      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <span>{pct}% complete</span>
         <div className="flex gap-3">
           {job.errors > 0 && (

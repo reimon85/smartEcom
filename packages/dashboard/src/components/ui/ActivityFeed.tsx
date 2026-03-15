@@ -6,9 +6,9 @@ interface ActivityFeedProps {
 }
 
 const typeConfig: Record<string, { bg: string; text: string; icon: string }> = {
-  description: { bg: 'bg-blue-100', text: 'text-blue-600', icon: '✦' },
-  review: { bg: 'bg-purple-100', text: 'text-purple-600', icon: '✉' },
-  alert: { bg: 'bg-amber-100', text: 'text-amber-600', icon: '⚡' },
+  description: { bg: 'bg-blue-100 dark:bg-blue-900/40', text: 'text-blue-600 dark:text-blue-400', icon: '✦' },
+  review: { bg: 'bg-purple-100 dark:bg-purple-900/40', text: 'text-purple-600 dark:text-purple-400', icon: '✉' },
+  alert: { bg: 'bg-amber-100 dark:bg-amber-900/40', text: 'text-amber-600 dark:text-amber-400', icon: '⚡' },
 };
 
 function timeAgo(dateStr: string): string {
@@ -59,8 +59,8 @@ export default function ActivityFeed({ items, loading = false }: ActivityFeedPro
               {config.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-slate-700 font-medium">{item.action}</p>
-              <p className="text-xs text-slate-500 truncate">{item.detail}</p>
+              <p className="text-sm text-slate-700 dark:text-slate-200 font-medium">{item.action}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{item.detail}</p>
             </div>
             <span className="text-xs text-slate-400 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
               {timeAgo(item.timestamp)}
