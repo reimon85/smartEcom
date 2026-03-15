@@ -74,22 +74,22 @@ export default function ProductsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Product Descriptions</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Descripciones de Producto</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Generate SEO-optimized product descriptions — 100 products in ~2 minutes
+          Genera descripciones SEO optimizadas — 100 productos en ~2 minutos
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Single generation form */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-slate-800">Generate Single Description</h2>
+          <h2 className="font-semibold text-slate-800">Generar Descripción Individual</h2>
 
           <div>
-            <label className="label">Product Name *</label>
+            <label className="label">Nombre del Producto *</label>
             <input
               className="input"
-              placeholder="e.g. Ultra-Slim Wireless Keyboard"
+              placeholder="ej. Teclado Inalámbrico Ultra-Slim"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
@@ -97,13 +97,13 @@ export default function ProductsPage() {
           </div>
 
           <div>
-            <label className="label">Category</label>
+            <label className="label">Categoría</label>
             <select
               className="input"
               value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
             >
-              <option value="">Select category...</option>
+              <option value="">Selecciona categoría...</option>
               {['Electronics', 'Clothing', 'Home & Garden', 'Beauty', 'Sports', 'Food & Beverage', 'Books', 'Toys', 'Automotive', 'Other'].map(
                 (c) => <option key={c} value={c}>{c}</option>,
               )}
@@ -111,15 +111,15 @@ export default function ProductsPage() {
           </div>
 
           <div>
-            <label className="label">Attributes (optional)</label>
+            <label className="label">Atributos (opcional)</label>
             <textarea
               className="input min-h-[80px] resize-none"
-              placeholder={'color: Blue, material: Aluminum, weight: 500g\nor paste JSON: {"color":"Blue"}'}
+              placeholder={'color: Azul, material: Aluminio, peso: 500g\no pega JSON: {"color":"Azul"}'}
               value={form.attributes}
               onChange={(e) => setForm((f) => ({ ...f, attributes: e.target.value }))}
             />
             <p className="text-xs text-slate-400 mt-1">
-              Comma-separated key: value pairs, or JSON object
+              Pares clave: valor separados por coma, o JSON
             </p>
           </div>
 
@@ -137,20 +137,20 @@ export default function ProductsPage() {
             {generating ? (
               <>
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Generating...
+                Generando...
               </>
             ) : (
-              'Generate Description'
+              'Generar Descripción'
             )}
           </button>
         </div>
 
         {/* Batch CSV upload */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-slate-800">Batch CSV Upload</h2>
+          <h2 className="font-semibold text-slate-800">Carga Masiva por CSV</h2>
           <p className="text-sm text-slate-500">
-            Upload a CSV file with columns: <code className="bg-slate-100 px-1 rounded">name</code>,{' '}
-            <code className="bg-slate-100 px-1 rounded">category</code>, and any attribute columns.
+            Sube un fichero CSV con columnas: <code className="bg-slate-100 px-1 rounded">name</code>,{' '}
+            <code className="bg-slate-100 px-1 rounded">category</code>, y cualquier columna de atributos.
           </p>
 
           <div
@@ -158,8 +158,8 @@ export default function ProductsPage() {
             onClick={() => fileRef.current?.click()}
           >
             <div className="text-3xl mb-2">📄</div>
-            <p className="text-sm font-medium text-slate-600">Click to upload CSV</p>
-            <p className="text-xs text-slate-400 mt-1">Up to 500 products, 10MB max</p>
+            <p className="text-sm font-medium text-slate-600">Haz clic para subir CSV</p>
+            <p className="text-xs text-slate-400 mt-1">Hasta 500 productos, máx. 10MB</p>
             <input
               type="file"
               accept=".csv,text/csv"
@@ -173,23 +173,23 @@ export default function ProductsPage() {
             <BatchJobProgress
               jobId={activeJobId}
               pollFn={descriptionsApi.getBatchStatus}
-              label="Description Batch"
+              label="Lote de Descripciones"
               onComplete={(job) => setCompletedJob(job)}
             />
           )}
 
           {completedJob && (
             <div className="text-sm text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-200">
-              Batch complete: {completedJob.processed} descriptions generated, {completedJob.errors} errors.
+              Lote completado: {completedJob.processed} descripciones generadas, {completedJob.errors} errores.
             </div>
           )}
 
           <div className="bg-slate-50 rounded-lg p-4">
-            <p className="text-xs font-semibold text-slate-600 mb-2">Speed Benchmark</p>
+            <p className="text-xs font-semibold text-slate-600 mb-2">Rendimiento</p>
             <ul className="text-xs text-slate-500 space-y-1">
-              <li>• 10 products: ~12 seconds</li>
-              <li>• 100 products: ~2 minutes</li>
-              <li>• Parallel batches of 10 for max throughput</li>
+              <li>• 10 productos: ~12 segundos</li>
+              <li>• 100 productos: ~2 minutos</li>
+              <li>• Lotes paralelos de 10 para máximo rendimiento</li>
             </ul>
           </div>
         </div>
@@ -198,7 +198,7 @@ export default function ProductsPage() {
       {/* Generated descriptions list */}
       {generated.length > 0 && (
         <div className="space-y-4">
-          <h2 className="font-semibold text-slate-800">Generated This Session ({generated.length})</h2>
+          <h2 className="font-semibold text-slate-800">Generadas esta sesión ({generated.length})</h2>
           {generated.map((item, idx) => (
             <DescriptionCard key={idx} item={item} />
           ))}
@@ -232,19 +232,19 @@ function DescriptionCard({ item }: { item: GeneratedItem }) {
         <div className="border-t border-slate-100 p-5 space-y-4">
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
-              Meta Description
+              Meta Descripción
             </p>
             <p className="text-sm text-slate-700 bg-blue-50 p-3 rounded-lg border border-blue-100">
               {item.result.meta_description}
             </p>
             <p className="text-xs text-slate-400 mt-1">
-              {item.result.meta_description.length} chars (max 160)
+              {item.result.meta_description.length} caracteres (máx. 160)
             </p>
           </div>
 
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
-              Full Description
+              Descripción Completa
             </p>
             <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
               {item.result.full_description}
@@ -253,7 +253,7 @@ function DescriptionCard({ item }: { item: GeneratedItem }) {
 
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-              Bullet Points
+              Puntos Destacados
             </p>
             <ul className="space-y-1">
               {item.result.bullet_points.map((b, i) => (
@@ -267,7 +267,7 @@ function DescriptionCard({ item }: { item: GeneratedItem }) {
 
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-              Keywords
+              Palabras Clave
             </p>
             <div className="flex flex-wrap gap-2">
               {item.result.keywords.map((kw, i) => (

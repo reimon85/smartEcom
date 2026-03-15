@@ -89,9 +89,9 @@ export default function CategorizationPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Product Categorization</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Categorización de Productos</h1>
         <p className="text-sm text-slate-500 mt-1">
-          AI-powered categorization with confidence scores — bulk process 100s of products in minutes
+          Categorización con IA y puntuación de confianza — procesa cientos de productos en minutos
         </p>
       </div>
 
@@ -114,7 +114,7 @@ export default function CategorizationPage() {
               tab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
-            {t === 'single' ? 'Single Product' : 'Batch / CSV Upload'}
+            {t === 'single' ? 'Producto Individual' : 'Carga Masiva / CSV'}
           </button>
         ))}
       </div>
@@ -127,13 +127,13 @@ export default function CategorizationPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Form */}
           <div className="card p-6 space-y-4">
-            <h2 className="font-semibold text-slate-800">Categorize a Product</h2>
+            <h2 className="font-semibold text-slate-800">Categorizar un Producto</h2>
 
             <div>
-              <label className="label">Product Name *</label>
+              <label className="label">Nombre del Producto *</label>
               <input
                 className="input"
-                placeholder="e.g. Noise-Cancelling Bluetooth Headphones"
+                placeholder="ej. Auriculares Bluetooth con Cancelación de Ruido"
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 onKeyDown={(e) => e.key === 'Enter' && handleCategorize()}
@@ -141,20 +141,20 @@ export default function CategorizationPage() {
             </div>
 
             <div>
-              <label className="label">Description (optional)</label>
+              <label className="label">Descripción (opcional)</label>
               <textarea
                 className="input min-h-[80px] resize-none"
-                placeholder="Optional product description to improve accuracy"
+                placeholder="Descripción opcional del producto para mejorar la precisión"
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               />
             </div>
 
             <div>
-              <label className="label">Attributes (optional)</label>
+              <label className="label">Atributos (opcional)</label>
               <input
                 className="input"
-                placeholder="color: Black, material: Plastic, wireless: true"
+                placeholder="color: Negro, material: Plástico, inalámbrico: true"
                 value={form.attributes}
                 onChange={(e) => setForm((f) => ({ ...f, attributes: e.target.value }))}
               />
@@ -168,9 +168,9 @@ export default function CategorizationPage() {
               {categorizing ? (
                 <>
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Categorizing...
+                  Categorizando...
                 </>
-              ) : 'Categorize Product'}
+              ) : 'Categorizar Producto'}
             </button>
           </div>
 
@@ -178,7 +178,7 @@ export default function CategorizationPage() {
           <div className="space-y-3">
             {results.length === 0 ? (
               <div className="card p-8 text-center text-slate-400 text-sm">
-                Results will appear here after categorization.
+                Los resultados aparecerán aquí tras la categorización.
               </div>
             ) : (
               results.map((item, idx) => (
@@ -226,11 +226,11 @@ export default function CategorizationPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Upload dropzone */}
           <div className="card p-6 space-y-4">
-            <h2 className="font-semibold text-slate-800">Batch CSV Upload</h2>
+            <h2 className="font-semibold text-slate-800">Carga Masiva por CSV</h2>
             <p className="text-sm text-slate-500">
-              Required column: <code className="bg-slate-100 px-1 rounded">name</code>
+              Columna requerida: <code className="bg-slate-100 px-1 rounded">name</code>
               <br />
-              Optional: <code className="bg-slate-100 px-1 rounded">description</code> and any attribute columns
+              Opcional: <code className="bg-slate-100 px-1 rounded">description</code> y cualquier columna de atributos
             </p>
 
             <div
@@ -238,8 +238,8 @@ export default function CategorizationPage() {
               onClick={() => fileRef.current?.click()}
             >
               <div className="text-4xl mb-3">📊</div>
-              <p className="text-sm font-medium text-slate-600">Drop CSV here or click to browse</p>
-              <p className="text-xs text-slate-400 mt-1">Up to 1,000 products, 10MB max</p>
+              <p className="text-sm font-medium text-slate-600">Arrastra un CSV aquí o haz clic para explorar</p>
+              <p className="text-xs text-slate-400 mt-1">Hasta 1.000 productos, máx. 10MB</p>
               <input
                 type="file"
                 accept=".csv,text/csv"
@@ -250,7 +250,7 @@ export default function CategorizationPage() {
             </div>
 
             <div className="bg-slate-50 rounded-lg p-4">
-              <p className="text-xs font-semibold text-slate-600 mb-2">Example CSV Format</p>
+              <p className="text-xs font-semibold text-slate-600 mb-2">Ejemplo de Formato CSV</p>
               <pre className="text-xs text-slate-500 font-mono">
 {`name,description,brand,material
 Yoga Pants,High-waist leggings,Lululemon,Spandex
@@ -262,14 +262,14 @@ Coffee Maker,12-cup drip,Cuisinart,Stainless`}
               <BatchJobProgress
                 jobId={activeJobId}
                 pollFn={categorizationApi.getBatchStatus}
-                label="Categorization Batch"
+                label="Lote de Categorización"
                 onComplete={(job) => setCompletedJob(job)}
               />
             )}
 
             {completedJob && (
               <div className="text-sm text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-200">
-                Batch complete: {completedJob.processed} products categorized, {completedJob.errors} errors.
+                Lote completado: {completedJob.processed} productos categorizados, {completedJob.errors} errores.
               </div>
             )}
           </div>
@@ -277,7 +277,7 @@ Coffee Maker,12-cup drip,Cuisinart,Stainless`}
           {/* Speed info */}
           <div className="space-y-4">
             <div className="card p-6 space-y-4">
-              <h3 className="font-semibold text-slate-800">Performance</h3>
+              <h3 className="font-semibold text-slate-800">Rendimiento</h3>
               <div className="space-y-3">
                 {[
                   { count: 10, time: '~8s', manual: '30min' },
@@ -286,7 +286,7 @@ Coffee Maker,12-cup drip,Cuisinart,Stainless`}
                   { count: 500, time: '~5min', manual: '25h' },
                 ].map(({ count, time, manual }) => (
                   <div key={count} className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">{count} products</span>
+                    <span className="text-slate-600">{count} productos</span>
                     <div className="flex items-center gap-3">
                       <span className="text-blue-600 font-semibold">{time} AI</span>
                       <span className="text-slate-400">vs</span>
@@ -298,7 +298,7 @@ Coffee Maker,12-cup drip,Cuisinart,Stainless`}
             </div>
 
             <div className="card p-6 space-y-3">
-              <h3 className="font-semibold text-slate-800">Available Categories</h3>
+              <h3 className="font-semibold text-slate-800">Categorías Disponibles</h3>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((cat) => (
                   <div key={cat} className="flex items-center gap-2 text-sm text-slate-600">

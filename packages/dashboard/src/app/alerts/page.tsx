@@ -79,9 +79,9 @@ export default function AlertsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Stock Alerts</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Alertas de Stock</h1>
         <p className="text-sm text-slate-500 mt-1">
-          AI-generated urgency copy for low-stock products across all channels
+          Copy de urgencia generado por IA para productos con bajo stock
         </p>
       </div>
 
@@ -89,15 +89,15 @@ export default function AlertsPage() {
       <div className="grid grid-cols-3 gap-4">
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-red-600">{active.filter((a) => a.alert_type === 'critical_low').length}</p>
-          <p className="text-xs text-slate-500 mt-1">Critical Low</p>
+          <p className="text-xs text-slate-500 mt-1">Stock Crítico</p>
         </div>
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-amber-600">{active.filter((a) => a.alert_type === 'low_stock').length}</p>
-          <p className="text-xs text-slate-500 mt-1">Low Stock</p>
+          <p className="text-xs text-slate-500 mt-1">Stock Bajo</p>
         </div>
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-slate-800">{active.filter((a) => a.alert_type === 'out_of_stock').length}</p>
-          <p className="text-xs text-slate-500 mt-1">Out of Stock</p>
+          <p className="text-xs text-slate-500 mt-1">Sin Stock</p>
         </div>
       </div>
 
@@ -111,7 +111,7 @@ export default function AlertsPage() {
               tab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
-            {t === 'active' ? `Active Alerts (${active.length})` : t === 'history' ? 'Alert History' : 'Manual Check'}
+            {t === 'active' ? `Alertas Activas (${active.length})` : t === 'history' ? 'Historial' : 'Revisión Manual'}
           </button>
         ))}
       </div>
@@ -129,8 +129,8 @@ export default function AlertsPage() {
           {!loading && active.length === 0 && (
             <div className="card p-12 text-center">
               <div className="text-3xl mb-3">✓</div>
-              <p className="font-medium text-slate-700">No active stock alerts</p>
-              <p className="text-sm text-slate-400 mt-1">All products are above threshold levels.</p>
+              <p className="font-medium text-slate-700">No hay alertas de stock activas</p>
+              <p className="text-sm text-slate-400 mt-1">Todos los productos están por encima del umbral.</p>
             </div>
           )}
           {active.map((alert) => (
@@ -148,17 +148,17 @@ export default function AlertsPage() {
       {tab === 'history' && (
         <div className="space-y-3">
           {history.length === 0 ? (
-            <div className="card p-8 text-center text-slate-400 text-sm">No alert history yet.</div>
+            <div className="card p-8 text-center text-slate-400 text-sm">Sin historial de alertas aún.</div>
           ) : (
             <div className="card overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Product</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Type</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Producto</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Tipo</th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Stock</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Status</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Created</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Estado</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -173,7 +173,7 @@ export default function AlertsPage() {
                         <span className="text-slate-400"> / {alert.threshold}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <StatusBadge status={alert.is_active ? 'active' : 'completed'} label={alert.is_active ? 'Active' : 'Resolved'} />
+                        <StatusBadge status={alert.is_active ? 'active' : 'completed'} label={alert.is_active ? 'Activa' : 'Resuelta'} />
                       </td>
                       <td className="px-4 py-3 text-slate-400">
                         {new Date(alert.created_at).toLocaleDateString()}
@@ -190,18 +190,18 @@ export default function AlertsPage() {
       {/* Manual Check */}
       {tab === 'check' && (
         <div className="card p-6 space-y-4 max-w-2xl">
-          <h2 className="font-semibold text-slate-800">Manual Stock Check</h2>
+          <h2 className="font-semibold text-slate-800">Revisión Manual de Stock</h2>
           <p className="text-sm text-slate-500">
-            Paste a JSON array of products to check. Products below threshold will trigger alert copy generation.
+            Pega un array JSON de productos a revisar. Los que estén por debajo del umbral generarán alertas automáticamente.
           </p>
 
           <div>
-            <label className="label">Products JSON *</label>
+            <label className="label">Productos JSON *</label>
             <textarea
               className="input font-mono text-xs min-h-[180px] resize-none"
               placeholder={`[
   {
-    "name": "Wireless Keyboard",
+    "name": "Teclado Inalámbrico",
     "shopify_product_id": "shopify_8001",
     "current_stock": 3,
     "threshold": 10,
@@ -215,7 +215,7 @@ export default function AlertsPage() {
 
           {checkResult && (
             <div className={`p-3 rounded-lg border text-sm ${checkResult.triggered > 0 ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
-              Checked {checkResult.checked} products. {checkResult.triggered} alert(s) triggered.
+              Revisados {checkResult.checked} productos. {checkResult.triggered} alerta(s) generada(s).
             </div>
           )}
 
@@ -227,9 +227,9 @@ export default function AlertsPage() {
             {checking ? (
               <>
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Checking...
+                Revisando...
               </>
-            ) : 'Run Stock Check'}
+            ) : 'Ejecutar Revisión'}
           </button>
         </div>
       )}
@@ -261,7 +261,7 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
             <h3 className="font-semibold text-slate-800 truncate">{alert.product_name}</h3>
             <p className="text-xs text-slate-400 mt-0.5">
               {alert.shopify_product_id && `ID: ${alert.shopify_product_id} · `}
-              Triggered {new Date(alert.created_at).toLocaleString()}
+              Activada {new Date(alert.created_at).toLocaleString()}
             </p>
           </div>
           <button
@@ -269,16 +269,16 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
             onClick={() => onResolve(alert.id)}
             disabled={resolving}
           >
-            {resolving ? '...' : 'Mark Resolved'}
+            {resolving ? '...' : 'Marcar Resuelto'}
           </button>
         </div>
 
         {/* Stock bar */}
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-slate-500">Current Stock</span>
+            <span className="text-slate-500">Stock Actual</span>
             <span className="font-semibold text-red-600">
-              {alert.current_stock} / {alert.threshold} (threshold)
+              {alert.current_stock} / {alert.threshold} (umbral)
             </span>
           </div>
           <div className="w-full bg-slate-200 rounded-full h-2">
@@ -310,15 +310,15 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
               {copyTab === 'email' && (
                 <>
                   <div>
-                    <span className="text-xs font-semibold text-slate-500 uppercase">Subject:</span>
+                    <span className="text-xs font-semibold text-slate-500 uppercase">Asunto:</span>
                     <p className="text-slate-700 font-medium mt-0.5">{copy.email_subject}</p>
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-slate-500 uppercase">Preheader:</span>
-                    <p className="text-slate-600 mt-0.5">{copy.email_preheader}</p>
+                    <span className="text-xs font-semibold text-slate-500 uppercase">Preencabezado:</span>
+                    <p className="text-slate-600 mt-0.5">{copy.email_preheader || copy.email_body?.slice(0, 90) || '—'}</p>
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-slate-500 uppercase">Body:</span>
+                    <span className="text-xs font-semibold text-slate-500 uppercase">Cuerpo:</span>
                     <p className="text-slate-700 mt-0.5 leading-relaxed">{copy.email_body}</p>
                   </div>
                 </>
@@ -334,7 +334,7 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
                   <p className="text-slate-700">{copy.internal_alert}</p>
                   {copy.recommended_action && (
                     <div className="mt-2 bg-blue-50 border border-blue-100 rounded p-2">
-                      <span className="text-xs font-semibold text-blue-600">Recommended Action: </span>
+                      <span className="text-xs font-semibold text-blue-600">Acción Recomendada: </span>
                       <span className="text-xs text-blue-700">{copy.recommended_action}</span>
                     </div>
                   )}

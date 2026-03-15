@@ -57,9 +57,9 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">AI Pipeline Dashboard</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Pipeline de Automatización IA</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Real-time metrics for your e-commerce automation
+            Métricas en tiempo real de tu e-commerce automatizado
           </p>
         </div>
         <div className="text-right">
@@ -80,17 +80,17 @@ export default function DashboardPage() {
         <div className="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
           <div className="flex items-center gap-2 text-sm">
             <span className="font-semibold text-blue-700">{live.pending_reviews}</span>
-            <span className="text-blue-600">reviews awaiting approval</span>
+            <span className="text-blue-600">reseñas esperando aprobación</span>
           </div>
           <div className="w-px bg-blue-200" />
           <div className="flex items-center gap-2 text-sm">
             <span className="font-semibold text-blue-700">{live.active_alerts}</span>
-            <span className="text-blue-600">active stock alerts</span>
+            <span className="text-blue-600">alertas de stock activas</span>
           </div>
           <div className="w-px bg-blue-200" />
           <div className="flex items-center gap-2 text-sm">
             <span className="font-semibold text-blue-700">{live.running_jobs}</span>
-            <span className="text-blue-600">batch jobs running</span>
+            <span className="text-blue-600">trabajos en lote en curso</span>
           </div>
         </div>
       )}
@@ -98,39 +98,39 @@ export default function DashboardPage() {
       {/* Today's KPIs */}
       <div>
         <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
-          Today
+          Hoy
         </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KPICard
-            title="Descriptions Generated"
+            title="Descripciones Generadas"
             value={today?.descriptions_generated ?? 0}
-            subtitle="SEO-optimized product copy"
+            subtitle="Texto SEO optimizado"
             color="blue"
             loading={loading}
             icon={<span className="text-sm">✦</span>}
-            trend={{ value: `${(today?.descriptions_generated ?? 0) * 14.5}m`, label: 'saved vs manual' }}
+            trend={{ value: `${(today?.descriptions_generated ?? 0) * 14.5}m`, label: 'ahorrados vs manual' }}
           />
           <KPICard
-            title="Reviews Processed"
+            title="Reseñas Procesadas"
             value={today?.reviews_processed ?? 0}
-            subtitle="Sentiment + AI responses"
+            subtitle="Sentimiento + respuesta IA"
             color="purple"
             loading={loading}
             icon={<span className="text-sm">✉</span>}
-            trend={{ value: `${(today?.reviews_processed ?? 0) * 18}m`, label: 'saved vs manual' }}
+            trend={{ value: `${(today?.reviews_processed ?? 0) * 18}m`, label: 'ahorrados vs manual' }}
           />
           <KPICard
-            title="Stock Alerts Sent"
+            title="Alertas de Stock"
             value={today?.alerts_sent ?? 0}
-            subtitle="Multi-channel copy generated"
+            subtitle="Copy multicanal generado"
             color="amber"
             loading={loading}
             icon={<span className="text-sm">⚡</span>}
           />
           <KPICard
-            title="Products Categorized"
+            title="Productos Categorizados"
             value={today?.categories_processed ?? 0}
-            subtitle="With confidence scores"
+            subtitle="Con puntuación de confianza"
             color="emerald"
             loading={loading}
             icon={<span className="text-sm">◉</span>}
@@ -141,39 +141,39 @@ export default function DashboardPage() {
       {/* Cost + Time Savings row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <KPICard
-          title="AI Cost Today"
+          title="Coste IA Hoy"
           value={today ? `$${today.estimated_cost}` : '$0.0000'}
-          subtitle="GPT-4o-mini tokens"
+          subtitle="Tokens GPT-4o-mini"
           color="blue"
           loading={loading}
         />
         <KPICard
-          title="Labor Cost Saved Today"
+          title="Ahorro en Mano de Obra Hoy"
           value={today ? `$${today.cost_saved.toFixed(2)}` : '$0.00'}
-          subtitle="vs manual processing @ $25/hr"
+          subtitle="vs proceso manual @ $25/h"
           color="emerald"
           loading={loading}
           trend={
             today?.cost_saved
               ? {
                   value: `${today.time_saved_minutes}m`,
-                  label: 'time saved today',
+                  label: 'ahorrados hoy',
                   positive: true,
                 }
               : undefined
           }
         />
         <KPICard
-          title="7-Day Cost Saved"
+          title="Ahorro Últimos 7 Días"
           value={week ? `$${week.cost_saved.toFixed(2)}` : '$0.00'}
-          subtitle={`vs $${week?.estimated_cost || '0'} in AI costs`}
+          subtitle={`vs $${week?.estimated_cost || '0'} en costes IA`}
           color="emerald"
           loading={loading}
           trend={
             week
               ? {
                   value: `${(week.time_saved_minutes / 60).toFixed(1)}h`,
-                  label: 'saved this week',
+                  label: 'ahorradas esta semana',
                   positive: true,
                 }
               : undefined
@@ -185,38 +185,47 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ROI Widget */}
         <div className="card p-6 space-y-4 col-span-1">
-          <h3 className="font-semibold text-slate-800">ROI Calculator</h3>
+          <h3 className="font-semibold text-slate-800">Calculadora de ROI</h3>
           {roi ? (
             <>
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">Total Time Saved</span>
+                  <span className="text-sm text-slate-600">Tiempo Total Ahorrado</span>
                   <span className="text-sm font-semibold text-slate-800">
                     {roi.summary.total_time_saved_hours}h
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">Labor Cost Saved</span>
+                  <span className="text-sm text-slate-600">Ahorro en Mano de Obra</span>
                   <span className="text-sm font-semibold text-emerald-700">
                     ${roi.summary.labor_cost_saved.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">AI Cost</span>
+                  <span className="text-sm text-slate-600">Coste IA</span>
                   <span className="text-sm font-semibold text-slate-800">
                     ${roi.summary.ai_cost.toFixed(4)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm font-semibold text-slate-700">Net Savings</span>
+                  <span className="text-sm font-semibold text-slate-700">Ahorro Neto</span>
                   <span className="text-sm font-bold text-emerald-600">
                     ${roi.summary.net_savings.toFixed(2)}
                   </span>
                 </div>
               </div>
               <div className="bg-emerald-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-emerald-700">{roi.summary.roi_percentage}%</div>
-                <div className="text-xs text-emerald-600">ROI on AI investment</div>
+                {parseFloat(roi.summary.roi_percentage) > 9999 ? (
+                  <>
+                    <div className="text-2xl font-bold text-emerald-700">+9.999%</div>
+                    <div className="text-xs text-emerald-600">ROI sobre inversión en IA</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-2xl font-bold text-emerald-700">{roi.summary.roi_percentage}%</div>
+                    <div className="text-xs text-emerald-600">ROI sobre inversión en IA</div>
+                  </>
+                )}
               </div>
             </>
           ) : (
@@ -230,7 +239,7 @@ export default function DashboardPage() {
 
         {/* Activity Feed */}
         <div className="card p-6 col-span-2">
-          <h3 className="font-semibold text-slate-800 mb-4">Recent Activity</h3>
+          <h3 className="font-semibold text-slate-800 mb-4">Actividad Reciente</h3>
           <ActivityFeed
             items={metrics?.recentActivity || []}
             loading={loading}
@@ -241,19 +250,19 @@ export default function DashboardPage() {
       {/* History Chart */}
       {history.length > 0 && (
         <div className="card p-6">
-          <h3 className="font-semibold text-slate-800 mb-6">14-Day Activity</h3>
+          <h3 className="font-semibold text-slate-800 mb-6">Actividad — Últimos 14 Días</h3>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={history} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis
                 dataKey="date"
                 tick={{ fontSize: 11, fill: '#94a3b8' }}
-                tickFormatter={(v) => new Date(v).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+                tickFormatter={(v) => new Date(v).toLocaleDateString('es', { month: 'short', day: 'numeric' })}
               />
               <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} />
               <Tooltip
                 contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}
-                labelFormatter={(v) => new Date(v).toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' })}
+                labelFormatter={(v) => new Date(v).toLocaleDateString('es', { weekday: 'short', month: 'short', day: 'numeric' })}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Line
@@ -262,7 +271,7 @@ export default function DashboardPage() {
                 stroke="#3b82f6"
                 strokeWidth={2}
                 dot={false}
-                name="Descriptions"
+                name="Descripciones"
               />
               <Line
                 type="monotone"
@@ -270,7 +279,7 @@ export default function DashboardPage() {
                 stroke="#8b5cf6"
                 strokeWidth={2}
                 dot={false}
-                name="Reviews"
+                name="Reseñas"
               />
               <Line
                 type="monotone"
@@ -278,7 +287,7 @@ export default function DashboardPage() {
                 stroke="#f59e0b"
                 strokeWidth={2}
                 dot={false}
-                name="Alerts"
+                name="Alertas"
               />
               <Line
                 type="monotone"
@@ -286,7 +295,7 @@ export default function DashboardPage() {
                 stroke="#10b981"
                 strokeWidth={2}
                 dot={false}
-                name="Categorized"
+                name="Categorizados"
               />
             </LineChart>
           </ResponsiveContainer>

@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: '◈' },
-  { href: '/products', label: 'Descriptions', icon: '✦' },
-  { href: '/reviews', label: 'Reviews', icon: '✉' },
-  { href: '/alerts', label: 'Stock Alerts', icon: '⚡' },
-  { href: '/categorization', label: 'Categorization', icon: '◉' },
+  { href: '/products', label: 'Descripciones', icon: '✦' },
+  { href: '/reviews', label: 'Reseñas', icon: '✉' },
+  { href: '/alerts', label: 'Alertas de Stock', icon: '⚡' },
+  { href: '/categorization', label: 'Categorización', icon: '◉' },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

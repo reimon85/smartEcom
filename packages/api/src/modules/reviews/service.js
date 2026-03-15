@@ -201,18 +201,18 @@ async function regenerateResponse(reviewId, feedback) {
 async function getStats() {
   const { rows: overall } = await db.query(`
     SELECT
-      COUNT(*)::int                                                        AS total_reviews,
-      COUNT(*) FILTER (WHERE sentiment = 'positive')::int                 AS positive_count,
-      COUNT(*) FILTER (WHERE sentiment = 'neutral')::int                  AS neutral_count,
-      COUNT(*) FILTER (WHERE sentiment = 'negative')::int                 AS negative_count,
-      COUNT(*) FILTER (WHERE status = 'approved')::int                    AS approved_count,
-      COUNT(*) FILTER (WHERE status = 'pending')::int                     AS pending_count,
-      COUNT(*) FILTER (WHERE status = 'rejected')::int                    AS rejected_count,
-      ROUND(AVG(sentiment_score)::numeric, 2)                             AS avg_sentiment_score,
-      ROUND(AVG(rating)::numeric, 2)                                      AS avg_rating,
+      COUNT(*)                                                             AS total_reviews,
+      SUM(CASE WHEN sentiment = 'positive' THEN 1 ELSE 0 END)            AS positive_count,
+      SUM(CASE WHEN sentiment = 'neutral'  THEN 1 ELSE 0 END)            AS neutral_count,
+      SUM(CASE WHEN sentiment = 'negative' THEN 1 ELSE 0 END)            AS negative_count,
+      SUM(CASE WHEN status = 'approved'    THEN 1 ELSE 0 END)            AS approved_count,
+      SUM(CASE WHEN status = 'pending'     THEN 1 ELSE 0 END)            AS pending_count,
+      SUM(CASE WHEN status = 'rejected'    THEN 1 ELSE 0 END)            AS rejected_count,
+      ROUND(AVG(sentiment_score), 2)                                      AS avg_sentiment_score,
+      ROUND(AVG(rating), 2)                                               AS avg_rating,
       ROUND(
-        100.0 * COUNT(*) FILTER (WHERE status = 'approved') /
-        NULLIF(COUNT(*) FILTER (WHERE status IN ('approved','rejected')), 0),
+        100.0 * SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) /
+        NULLIF(SUM(CASE WHEN status IN ('approved','rejected') THEN 1 ELSE 0 END), 0),
         1
       )                                                                    AS approval_rate_pct
     FROM reviews
@@ -221,11 +221,11 @@ async function getStats() {
   const { rows: byDay } = await db.query(`
     SELECT
       DATE(created_at) AS date,
-      COUNT(*)::int    AS total,
-      COUNT(*) FILTER (WHERE sentiment = 'positive')::int AS positive,
-      COUNT(*) FILTER (WHERE sentiment = 'negative')::int AS negative
+      COUNT(*)         AS total,
+      SUM(CASE WHEN sentiment = 'positive' THEN 1 ELSE 0 END) AS positive,
+      SUM(CASE WHEN sentiment = 'negative' THEN 1 ELSE 0 END) AS negative
     FROM reviews
-    WHERE created_at >= NOW() - INTERVAL '30 days'
+    WHERE created_at >= datetime('now', '-30 days')
     GROUP BY DATE(created_at)
     ORDER BY date DESC
   `);

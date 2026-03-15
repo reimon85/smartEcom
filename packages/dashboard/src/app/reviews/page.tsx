@@ -117,9 +117,9 @@ export default function ReviewsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Review Sentiment & Moderation</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Moderación de Reseñas</h1>
         <p className="text-sm text-slate-500 mt-1">
-          AI-generated responses with human-in-the-loop approval
+          Respuestas IA con aprobación humana antes de publicar
         </p>
       </div>
 
@@ -127,11 +127,11 @@ export default function ReviewsPage() {
       {overall && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
           {[
-            { label: 'Total Reviews', value: overall.total_reviews, color: 'text-slate-800' },
-            { label: 'Positive', value: overall.positive_count, color: 'text-emerald-600' },
-            { label: 'Neutral', value: overall.neutral_count, color: 'text-amber-600' },
-            { label: 'Negative', value: overall.negative_count, color: 'text-red-600' },
-            { label: 'Approval Rate', value: `${overall.approval_rate_pct || 0}%`, color: 'text-blue-600' },
+            { label: 'Total Reseñas', value: overall.total_reviews, color: 'text-slate-800' },
+            { label: 'Positivas', value: overall.positive_count, color: 'text-emerald-600' },
+            { label: 'Neutras', value: overall.neutral_count, color: 'text-amber-600' },
+            { label: 'Negativas', value: overall.negative_count, color: 'text-red-600' },
+            { label: 'Tasa de Aprobación', value: `${overall.approval_rate_pct || 0}%`, color: 'text-blue-600' },
           ].map((stat) => (
             <div key={stat.label} className="card p-4 text-center">
               <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
@@ -154,8 +154,8 @@ export default function ReviewsPage() {
             }`}
           >
             {tab === 'queue' ? (
-              <>Approval Queue {pending.length > 0 && <span className="ml-1.5 bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5 rounded-full">{pending.length}</span>}</>
-            ) : 'Analyze New Review'}
+              <>Cola de Aprobación {pending.length > 0 && <span className="ml-1.5 bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5 rounded-full">{pending.length}</span>}</>
+            ) : 'Analizar Nueva Reseña'}
           </button>
         ))}
       </div>
@@ -180,8 +180,8 @@ export default function ReviewsPage() {
           {!loading && pending.length === 0 && (
             <div className="card p-12 text-center">
               <div className="text-3xl mb-3">✓</div>
-              <p className="font-medium text-slate-700">All caught up!</p>
-              <p className="text-sm text-slate-400 mt-1">No reviews pending approval.</p>
+              <p className="font-medium text-slate-700">¡Al día!</p>
+              <p className="text-sm text-slate-400 mt-1">No hay reseñas pendientes de aprobación.</p>
             </div>
           )}
           {pending.map((review) => (
@@ -200,11 +200,11 @@ export default function ReviewsPage() {
       {/* Analyze tab */}
       {activeTab === 'analyze' && (
         <div className="card p-6 space-y-4 max-w-2xl">
-          <h2 className="font-semibold text-slate-800">Analyze a Review</h2>
+          <h2 className="font-semibold text-slate-800">Analizar una Reseña</h2>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">Reviewer Name</label>
+              <label className="label">Nombre del cliente</label>
               <input
                 className="input"
                 placeholder="Jane D."
@@ -213,31 +213,31 @@ export default function ReviewsPage() {
               />
             </div>
             <div>
-              <label className="label">Rating</label>
+              <label className="label">Valoración</label>
               <select
                 className="input"
                 value={form.rating}
                 onChange={(e) => setForm((f) => ({ ...f, rating: e.target.value }))}
               >
                 {[5, 4, 3, 2, 1].map((r) => (
-                  <option key={r} value={r}>{r} Star{r !== 1 ? 's' : ''}</option>
+                  <option key={r} value={r}>{r} estrella{r !== 1 ? 's' : ''}</option>
                 ))}
               </select>
             </div>
           </div>
 
           <div>
-            <label className="label">Review Content *</label>
+            <label className="label">Contenido de la reseña *</label>
             <textarea
               className="input min-h-[120px] resize-none"
-              placeholder="The product arrived quickly and works exactly as described..."
+              placeholder="El producto llegó rápido y funciona exactamente como se describe..."
               value={form.content}
               onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
             />
           </div>
 
           <div>
-            <label className="label">Shopify Product ID (optional)</label>
+            <label className="label">ID de Producto Shopify (opcional)</label>
             <input
               className="input"
               placeholder="shopify_8001"
@@ -254,18 +254,18 @@ export default function ReviewsPage() {
             {analyzing ? (
               <>
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Analyzing...
+                Analizando...
               </>
-            ) : 'Analyze & Generate Response'}
+            ) : 'Analizar y Generar Respuesta'}
           </button>
 
           {analyzeResult && (
             <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-sm">
               <p className="font-semibold text-emerald-800 mb-1">
-                Analysis complete — added to approval queue
+                Análisis completado — añadida a la cola de aprobación
               </p>
               <p className="text-emerald-700">
-                Sentiment: <StatusBadge status={analyzeResult.sentiment} />
+                Sentimiento: <StatusBadge status={analyzeResult.sentiment} />
               </p>
             </div>
           )}
@@ -318,7 +318,7 @@ function ReviewCard({ review, actionLoading, onApprove, onReject, onRegenerate }
         {expanded && (
           <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg p-4">
             <p className="text-xs font-semibold text-blue-700 mb-2 uppercase tracking-wide">
-              AI Response Draft
+              Borrador de Respuesta IA
             </p>
             <p className="text-sm text-slate-700 leading-relaxed">{review.ai_response}</p>
           </div>
@@ -330,7 +330,7 @@ function ReviewCard({ review, actionLoading, onApprove, onReject, onRegenerate }
           className="text-xs text-slate-400 hover:text-slate-600"
           onClick={() => setExpanded((e) => !e)}
         >
-          {expanded ? 'Hide' : 'Show'} AI response
+          {expanded ? 'Ocultar' : 'Mostrar'} respuesta IA
         </button>
 
         <div className="flex gap-2">
@@ -339,31 +339,31 @@ function ReviewCard({ review, actionLoading, onApprove, onReject, onRegenerate }
             onClick={() => onRegenerate(review.id)}
             disabled={!!actionLoading}
           >
-            {actionLoading === 'regenerating' ? '...' : '↻ Regenerate'}
+            {actionLoading === 'regenerating' ? '...' : '↻ Regenerar'}
           </button>
           <button
             className="btn-danger text-xs py-1.5 px-3"
             onClick={() => setShowRejectModal(true)}
             disabled={!!actionLoading}
           >
-            {actionLoading === 'rejecting' ? '...' : '✕ Reject'}
+            {actionLoading === 'rejecting' ? '...' : '✕ Rechazar'}
           </button>
           <button
             className="btn-success text-xs py-1.5 px-3"
             onClick={() => onApprove(review.id)}
             disabled={!!actionLoading}
           >
-            {actionLoading === 'approving' ? '...' : '✓ Approve & Publish'}
+            {actionLoading === 'approving' ? '...' : '✓ Aprobar y Publicar'}
           </button>
         </div>
       </div>
 
       {showRejectModal && (
         <div className="border-t border-slate-100 p-4 bg-red-50 space-y-3">
-          <p className="text-sm font-medium text-red-700">Reject this response</p>
+          <p className="text-sm font-medium text-red-700">Rechazar esta respuesta</p>
           <textarea
             className="input text-sm min-h-[60px] resize-none"
-            placeholder="Optional feedback for the AI to improve the next attempt..."
+            placeholder="Feedback opcional para mejorar la siguiente respuesta..."
             value={rejectFeedback}
             onChange={(e) => setRejectFeedback(e.target.value)}
           />
@@ -375,13 +375,13 @@ function ReviewCard({ review, actionLoading, onApprove, onReject, onRegenerate }
                 setShowRejectModal(false);
               }}
             >
-              Confirm Reject
+              Confirmar Rechazo
             </button>
             <button
               className="btn-secondary text-xs py-1.5 px-3"
               onClick={() => setShowRejectModal(false)}
             >
-              Cancel
+              Cancelar
             </button>
           </div>
         </div>
