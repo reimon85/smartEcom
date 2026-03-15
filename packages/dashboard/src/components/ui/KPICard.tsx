@@ -17,11 +17,11 @@ interface KPICardProps {
 }
 
 const colorMap = {
-  blue: 'bg-blue-50 text-blue-600 border-blue-100',
-  emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-  amber: 'bg-amber-50 text-amber-600 border-amber-100',
-  red: 'bg-red-50 text-red-600 border-red-100',
-  purple: 'bg-purple-50 text-purple-600 border-purple-100',
+  blue: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+  emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
+  amber: 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
+  red: 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
+  purple: 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
 };
 
 export default function KPICard({
@@ -49,7 +49,7 @@ export default function KPICard({
   return (
     <div className="card p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
-        <p className="text-sm font-medium text-slate-500">{title}</p>
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
         {icon && (
           <div
             className={clsx(
@@ -63,8 +63,8 @@ export default function KPICard({
       </div>
 
       <div className="space-y-1">
-        <p className="text-2xl font-bold text-slate-900 tabular-nums">{value}</p>
-        {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
+        <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums">{value}</p>
+        {subtitle && <p className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>}
       </div>
 
       {trend && (
