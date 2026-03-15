@@ -118,7 +118,7 @@ export default function ReviewsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Moderación de Reseñas</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Respuestas IA con aprobación humana antes de publicar
         </p>
       </div>
@@ -127,7 +127,7 @@ export default function ReviewsPage() {
       {overall && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
           {[
-            { label: 'Total Reseñas', value: overall.total_reviews, color: 'text-slate-800' },
+            { label: 'Total Reseñas', value: overall.total_reviews, color: 'text-slate-800 dark:text-white' },
             { label: 'Positivas', value: overall.positive_count, color: 'text-emerald-600' },
             { label: 'Neutras', value: overall.neutral_count, color: 'text-amber-600' },
             { label: 'Negativas', value: overall.negative_count, color: 'text-red-600' },
@@ -135,7 +135,7 @@ export default function ReviewsPage() {
           ].map((stat) => (
             <div key={stat.label} className="card p-4 text-center">
               <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
-              <p className="text-xs text-slate-500 mt-1">{stat.label}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -150,7 +150,7 @@ export default function ReviewsPage() {
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab
                 ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             {tab === 'queue' ? (
@@ -171,7 +171,7 @@ export default function ReviewsPage() {
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="card p-6 animate-pulse">
-                  <div className="h-4 w-48 bg-slate-200 rounded mb-3" />
+                  <div className="h-4 w-48 bg-slate-200 dark:bg-slate-600 rounded mb-3" />
                   <div className="h-16 bg-slate-100 rounded" />
                 </div>
               ))}
@@ -180,7 +180,7 @@ export default function ReviewsPage() {
           {!loading && pending.length === 0 && (
             <div className="card p-12 text-center">
               <div className="text-3xl mb-3">✓</div>
-              <p className="font-medium text-slate-700">¡Al día!</p>
+              <p className="font-medium text-slate-700 dark:text-slate-200">¡Al día!</p>
               <p className="text-sm text-slate-400 mt-1">No hay reseñas pendientes de aprobación.</p>
             </div>
           )}
@@ -200,7 +200,7 @@ export default function ReviewsPage() {
       {/* Analyze tab */}
       {activeTab === 'analyze' && (
         <div className="card p-6 space-y-4 max-w-2xl">
-          <h2 className="font-semibold text-slate-800">Analizar una Reseña</h2>
+          <h2 className="font-semibold text-slate-800 dark:text-slate-100">Analizar una Reseña</h2>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -295,11 +295,11 @@ function ReviewCard({ review, actionLoading, onApprove, onReject, onRegenerate }
       <div className="p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center text-sm font-semibold text-slate-600">
+            <div className="w-9 h-9 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center text-sm font-semibold text-slate-600 dark:text-slate-200">
               {review.reviewer_name?.[0] || '?'}
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-800">{review.reviewer_name || 'Anonymous'}</p>
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{review.reviewer_name || 'Anonymous'}</p>
               <p className="text-xs text-amber-500">{stars}</p>
             </div>
           </div>
@@ -311,23 +311,23 @@ function ReviewCard({ review, actionLoading, onApprove, onReject, onRegenerate }
           </div>
         </div>
 
-        <blockquote className="text-sm text-slate-600 italic bg-slate-50 p-3 rounded-lg border-l-2 border-slate-300">
+        <blockquote className="text-sm text-slate-600 dark:text-slate-300 italic bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border-l-2 border-slate-300 dark:border-slate-500">
           "{review.content}"
         </blockquote>
 
         {expanded && (
-          <div className="mt-4 bg-blue-50 border border-blue-100 rounded-lg p-4">
-            <p className="text-xs font-semibold text-blue-700 mb-2 uppercase tracking-wide">
+          <div className="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4">
+            <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2 uppercase tracking-wide">
               Borrador de Respuesta IA
             </p>
-            <p className="text-sm text-slate-700 leading-relaxed">{review.ai_response}</p>
+            <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">{review.ai_response}</p>
           </div>
         )}
       </div>
 
-      <div className="border-t border-slate-100 px-5 py-3 flex items-center justify-between bg-slate-50">
+      <div className="border-t border-slate-100 dark:border-slate-700 px-5 py-3 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
         <button
-          className="text-xs text-slate-400 hover:text-slate-600"
+          className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
           onClick={() => setExpanded((e) => !e)}
         >
           {expanded ? 'Ocultar' : 'Mostrar'} respuesta IA
@@ -359,8 +359,8 @@ function ReviewCard({ review, actionLoading, onApprove, onReject, onRegenerate }
       </div>
 
       {showRejectModal && (
-        <div className="border-t border-slate-100 p-4 bg-red-50 space-y-3">
-          <p className="text-sm font-medium text-red-700">Rechazar esta respuesta</p>
+        <div className="border-t border-slate-100 dark:border-slate-700 p-4 bg-red-50 dark:bg-red-900/20 space-y-3">
+          <p className="text-sm font-medium text-red-700 dark:text-red-400">Rechazar esta respuesta</p>
           <textarea
             className="input text-sm min-h-[60px] resize-none"
             placeholder="Feedback opcional para mejorar la siguiente respuesta..."

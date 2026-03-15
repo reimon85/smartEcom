@@ -80,7 +80,7 @@ export default function AlertsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Alertas de Stock</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Copy de urgencia generado por IA para productos con bajo stock
         </p>
       </div>
@@ -89,15 +89,15 @@ export default function AlertsPage() {
       <div className="grid grid-cols-3 gap-4">
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-red-600">{active.filter((a) => a.alert_type === 'critical_low').length}</p>
-          <p className="text-xs text-slate-500 mt-1">Stock Crítico</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Stock Crítico</p>
         </div>
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-amber-600">{active.filter((a) => a.alert_type === 'low_stock').length}</p>
-          <p className="text-xs text-slate-500 mt-1">Stock Bajo</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Stock Bajo</p>
         </div>
         <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-slate-800">{active.filter((a) => a.alert_type === 'out_of_stock').length}</p>
-          <p className="text-xs text-slate-500 mt-1">Sin Stock</p>
+          <p className="text-2xl font-bold text-slate-800 dark:text-white">{active.filter((a) => a.alert_type === 'out_of_stock').length}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Sin Stock</p>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export default function AlertsPage() {
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors capitalize ${
-              tab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+              tab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             {t === 'active' ? `Alertas Activas (${active.length})` : t === 'history' ? 'Historial' : 'Revisión Manual'}
@@ -129,8 +129,8 @@ export default function AlertsPage() {
           {!loading && active.length === 0 && (
             <div className="card p-12 text-center">
               <div className="text-3xl mb-3">✓</div>
-              <p className="font-medium text-slate-700">No hay alertas de stock activas</p>
-              <p className="text-sm text-slate-400 mt-1">Todos los productos están por encima del umbral.</p>
+              <p className="font-medium text-slate-700 dark:text-slate-200">No hay alertas de stock activas</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Todos los productos están por encima del umbral.</p>
             </div>
           )}
           {active.map((alert) => (
@@ -153,18 +153,18 @@ export default function AlertsPage() {
             <div className="card overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Producto</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Tipo</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Stock</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Estado</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Fecha</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Producto</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Tipo</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Stock</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Estado</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
                   {history.map((alert) => (
-                    <tr key={alert.id} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="px-4 py-3 font-medium text-slate-700 max-w-xs truncate">{alert.product_name}</td>
+                    <tr key={alert.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                      <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-200 max-w-xs truncate">{alert.product_name}</td>
                       <td className="px-4 py-3"><StatusBadge status={alert.alert_type} /></td>
                       <td className="px-4 py-3 tabular-nums">
                         <span className={alert.current_stock === 0 ? 'text-red-600 font-bold' : alert.current_stock <= 3 ? 'text-red-500 font-semibold' : 'text-amber-600'}>
@@ -175,7 +175,7 @@ export default function AlertsPage() {
                       <td className="px-4 py-3">
                         <StatusBadge status={alert.is_active ? 'active' : 'completed'} label={alert.is_active ? 'Activa' : 'Resuelta'} />
                       </td>
-                      <td className="px-4 py-3 text-slate-400">
+                      <td className="px-4 py-3 text-slate-400 dark:text-slate-500">
                         {new Date(alert.created_at).toLocaleDateString()}
                       </td>
                     </tr>
@@ -190,7 +190,7 @@ export default function AlertsPage() {
       {/* Manual Check */}
       {tab === 'check' && (
         <div className="card p-6 space-y-4 max-w-2xl">
-          <h2 className="font-semibold text-slate-800">Revisión Manual de Stock</h2>
+          <h2 className="font-semibold text-slate-800 dark:text-slate-100">Revisión Manual de Stock</h2>
           <p className="text-sm text-slate-500">
             Pega un array JSON de productos a revisar. Los que estén por debajo del umbral generarán alertas automáticamente.
           </p>
@@ -258,8 +258,8 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
               <StatusBadge status={alert.alert_type} size="md" />
               <span className="text-xs text-slate-400">#{alert.id}</span>
             </div>
-            <h3 className="font-semibold text-slate-800 truncate">{alert.product_name}</h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <h3 className="font-semibold text-slate-800 dark:text-slate-100 truncate">{alert.product_name}</h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
               {alert.shopify_product_id && `ID: ${alert.shopify_product_id} · `}
               Activada {new Date(alert.created_at).toLocaleString()}
             </p>
@@ -276,12 +276,12 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
         {/* Stock bar */}
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-slate-500">Stock Actual</span>
+            <span className="text-slate-500 dark:text-slate-400">Stock Actual</span>
             <span className="font-semibold text-red-600">
               {alert.current_stock} / {alert.threshold} (umbral)
             </span>
           </div>
-          <div className="w-full bg-slate-200 rounded-full h-2">
+          <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2">
             <div
               className="h-full rounded-full bg-red-500 transition-all"
               style={{ width: `${stockPct}%` }}
@@ -292,13 +292,13 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
         {/* Copy tabs */}
         {copy && (
           <div>
-            <div className="flex gap-1 mb-3 border-b border-slate-100">
+            <div className="flex gap-1 mb-3 border-b border-slate-100 dark:border-slate-700">
               {(['email', 'sms', 'push', 'internal'] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setCopyTab(t)}
                   className={`px-3 py-1.5 text-xs font-medium border-b-2 transition-colors capitalize ${
-                    copyTab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500'
+                    copyTab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 dark:text-slate-400'
                   }`}
                 >
                   {t === 'internal' ? 'Internal' : t.toUpperCase()}
@@ -306,36 +306,36 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
               ))}
             </div>
 
-            <div className="bg-slate-50 rounded-lg p-4 space-y-2 text-sm">
+            <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 space-y-2 text-sm">
               {copyTab === 'email' && (
                 <>
                   <div>
-                    <span className="text-xs font-semibold text-slate-500 uppercase">Asunto:</span>
-                    <p className="text-slate-700 font-medium mt-0.5">{copy.email_subject}</p>
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Asunto:</span>
+                    <p className="text-slate-700 dark:text-slate-200 font-medium mt-0.5">{copy.email_subject}</p>
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-slate-500 uppercase">Preencabezado:</span>
-                    <p className="text-slate-600 mt-0.5">{copy.email_preheader || copy.email_body?.slice(0, 90) || '—'}</p>
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Preencabezado:</span>
+                    <p className="text-slate-600 dark:text-slate-300 mt-0.5">{copy.email_preheader || copy.email_body?.slice(0, 90) || '—'}</p>
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-slate-500 uppercase">Cuerpo:</span>
-                    <p className="text-slate-700 mt-0.5 leading-relaxed">{copy.email_body}</p>
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Cuerpo:</span>
+                    <p className="text-slate-700 dark:text-slate-200 mt-0.5 leading-relaxed">{copy.email_body}</p>
                   </div>
                 </>
               )}
               {copyTab === 'sms' && (
-                <p className="text-slate-700">{copy.sms}</p>
+                <p className="text-slate-700 dark:text-slate-200">{copy.sms}</p>
               )}
               {copyTab === 'push' && (
-                <p className="text-slate-700">{copy.push_notification}</p>
+                <p className="text-slate-700 dark:text-slate-200">{copy.push_notification}</p>
               )}
               {copyTab === 'internal' && (
                 <>
-                  <p className="text-slate-700">{copy.internal_alert}</p>
+                  <p className="text-slate-700 dark:text-slate-200">{copy.internal_alert}</p>
                   {copy.recommended_action && (
-                    <div className="mt-2 bg-blue-50 border border-blue-100 rounded p-2">
-                      <span className="text-xs font-semibold text-blue-600">Acción Recomendada: </span>
-                      <span className="text-xs text-blue-700">{copy.recommended_action}</span>
+                    <div className="mt-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded p-2">
+                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">Acción Recomendada: </span>
+                      <span className="text-xs text-blue-700 dark:text-blue-300">{copy.recommended_action}</span>
                     </div>
                   )}
                 </>

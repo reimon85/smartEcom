@@ -77,20 +77,20 @@ export default function DashboardPage() {
 
       {/* Live status strip */}
       {live && (
-        <div className="flex gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+        <div className="flex gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-semibold text-blue-700">{live.pending_reviews}</span>
-            <span className="text-blue-600">reseñas esperando aprobación</span>
+            <span className="font-semibold text-blue-700 dark:text-blue-300">{live.pending_reviews}</span>
+            <span className="text-blue-600 dark:text-blue-400">reseñas esperando aprobación</span>
           </div>
           <div className="w-px bg-blue-200" />
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-semibold text-blue-700">{live.active_alerts}</span>
-            <span className="text-blue-600">alertas de stock activas</span>
+            <span className="font-semibold text-blue-700 dark:text-blue-300">{live.active_alerts}</span>
+            <span className="text-blue-600 dark:text-blue-400">alertas de stock activas</span>
           </div>
           <div className="w-px bg-blue-200" />
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-semibold text-blue-700">{live.running_jobs}</span>
-            <span className="text-blue-600">trabajos en lote en curso</span>
+            <span className="font-semibold text-blue-700 dark:text-blue-300">{live.running_jobs}</span>
+            <span className="text-blue-600 dark:text-blue-400">trabajos en lote en curso</span>
           </div>
         </div>
       )}
@@ -189,26 +189,26 @@ export default function DashboardPage() {
           {roi ? (
             <>
               <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">Tiempo Total Ahorrado</span>
-                  <span className="text-sm font-semibold text-slate-800">
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Tiempo Total Ahorrado</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     {roi.summary.total_time_saved_hours}h
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">Ahorro en Mano de Obra</span>
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Ahorro en Mano de Obra</span>
                   <span className="text-sm font-semibold text-emerald-700">
                     ${roi.summary.labor_cost_saved.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-600">Coste IA</span>
-                  <span className="text-sm font-semibold text-slate-800">
+                <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Coste IA</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     ${roi.summary.ai_cost.toFixed(4)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm font-semibold text-slate-700">Ahorro Neto</span>
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Ahorro Neto</span>
                   <span className="text-sm font-bold text-emerald-600">
                     ${roi.summary.net_savings.toFixed(2)}
                   </span>
