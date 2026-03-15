@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { alertsApi, type StockAlert } from '@/lib/api';
 import StatusBadge from '@/components/ui/StatusBadge';
+import CopyButton from '@/components/ui/CopyButton';
 
 export default function AlertsPage() {
   const [active, setActive] = useState<StockAlert[]>([]);
@@ -79,7 +80,7 @@ export default function AlertsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Alertas de Stock</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Alertas de Stock</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Copy de urgencia generado por IA para productos con bajo stock
         </p>
@@ -309,29 +310,43 @@ function AlertCard({ alert, onResolve, resolving }: AlertCardProps) {
             <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 space-y-2 text-sm">
               {copyTab === 'email' && (
                 <>
-                  <div>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Asunto:</span>
-                    <p className="text-slate-700 dark:text-slate-200 font-medium mt-0.5">{copy.email_subject}</p>
-                  </div>
-                  <div>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Preencabezado:</span>
-                    <p className="text-slate-600 dark:text-slate-300 mt-0.5">{copy.email_preheader || copy.email_body?.slice(0, 90) || '—'}</p>
-                  </div>
-                  <div>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Cuerpo:</span>
-                    <p className="text-slate-700 dark:text-slate-200 mt-0.5 leading-relaxed">{copy.email_body}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 space-y-2">
+                      <div>
+                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Asunto:</span>
+                        <p className="text-slate-700 dark:text-slate-200 font-medium mt-0.5">{copy.email_subject}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Preencabezado:</span>
+                        <p className="text-slate-600 dark:text-slate-300 mt-0.5">{copy.email_preheader || copy.email_body?.slice(0, 90) || '—'}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Cuerpo:</span>
+                        <p className="text-slate-700 dark:text-slate-200 mt-0.5 leading-relaxed">{copy.email_body}</p>
+                      </div>
+                    </div>
+                    <CopyButton text={`Asunto: ${copy.email_subject}\n\n${copy.email_body}`} className="flex-shrink-0 mt-0.5" />
                   </div>
                 </>
               )}
               {copyTab === 'sms' && (
-                <p className="text-slate-700 dark:text-slate-200">{copy.sms}</p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-slate-700 dark:text-slate-200 flex-1">{copy.sms}</p>
+                  <CopyButton text={copy.sms || ''} className="flex-shrink-0" />
+                </div>
               )}
               {copyTab === 'push' && (
-                <p className="text-slate-700 dark:text-slate-200">{copy.push_notification}</p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-slate-700 dark:text-slate-200 flex-1">{copy.push_notification}</p>
+                  <CopyButton text={copy.push_notification || ''} className="flex-shrink-0" />
+                </div>
               )}
               {copyTab === 'internal' && (
                 <>
-                  <p className="text-slate-700 dark:text-slate-200">{copy.internal_alert}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-slate-700 dark:text-slate-200 flex-1">{copy.internal_alert}</p>
+                    <CopyButton text={copy.internal_alert || ''} className="flex-shrink-0" />
+                  </div>
                   {copy.recommended_action && (
                     <div className="mt-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded p-2">
                       <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">Acción Recomendada: </span>

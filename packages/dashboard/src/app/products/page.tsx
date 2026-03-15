@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { descriptionsApi, type ProductDescription, type BatchJob } from '@/lib/api';
 import BatchJobProgress from '@/components/ui/BatchJobProgress';
+import CopyButton from '@/components/ui/CopyButton';
 
 interface GeneratedItem {
   name: string;
@@ -18,6 +19,30 @@ export default function ProductsPage() {
   const [activeJobId, setActiveJobId] = useState<number | null>(null);
   const [completedJob, setCompletedJob] = useState<BatchJob | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleExportCSV = () => {
+    if (generated.length === 0) return;
+    const headers = ['Nombre', 'Título SEO', 'Meta Descripción', 'Descripción Completa', 'Palabras Clave', 'Tokens', 'Coste ($)'];
+    const rows = generated.map((item) => [
+      item.name,
+      item.result.title,
+      item.result.meta_description,
+      item.result.full_description.replace(/\n/g, ' '),
+      item.result.keywords.join('; '),
+      item.result.tokens.total,
+      item.result.cost.toFixed(5),
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `descripciones_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleGenerate = async () => {
     if (!form.name.trim()) return;
@@ -74,8 +99,8 @@ export default function ProductsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Descripciones de Producto</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Descripciones de Producto</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Genera descripciones SEO optimizadas — 100 productos en ~2 minutos
         </p>
       </div>
@@ -83,7 +108,7 @@ export default function ProductsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Single generation form */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-slate-800">Generar Descripción Individual</h2>
+          <h2 className="font-semibold text-slate-800 dark:text-slate-100">Generar Descripción Individual</h2>
 
           <div>
             <label className="label">Nombre del Producto *</label>
@@ -147,18 +172,18 @@ export default function ProductsPage() {
 
         {/* Batch CSV upload */}
         <div className="card p-6 space-y-4">
-          <h2 className="font-semibold text-slate-800">Carga Masiva por CSV</h2>
-          <p className="text-sm text-slate-500">
+          <h2 className="font-semibold text-slate-800 dark:text-slate-100">Carga Masiva por CSV</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Sube un fichero CSV con columnas: <code className="bg-slate-100 px-1 rounded">name</code>,{' '}
             <code className="bg-slate-100 px-1 rounded">category</code>, y cualquier columna de atributos.
           </p>
 
           <div
-            className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+            className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
             onClick={() => fileRef.current?.click()}
           >
             <div className="text-3xl mb-2">📄</div>
-            <p className="text-sm font-medium text-slate-600">Haz clic para subir CSV</p>
+            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Haz clic para subir CSV</p>
             <p className="text-xs text-slate-400 mt-1">Hasta 500 productos, máx. 10MB</p>
             <input
               type="file"
@@ -184,9 +209,9 @@ export default function ProductsPage() {
             </div>
           )}
 
-          <div className="bg-slate-50 rounded-lg p-4">
-            <p className="text-xs font-semibold text-slate-600 mb-2">Rendimiento</p>
-            <ul className="text-xs text-slate-500 space-y-1">
+          <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Rendimiento</p>
+            <ul className="text-xs text-slate-500 dark:text-slate-400 space-y-1">
               <li>• 10 productos: ~12 segundos</li>
               <li>• 100 productos: ~2 minutos</li>
               <li>• Lotes paralelos de 10 para máximo rendimiento</li>
@@ -198,7 +223,12 @@ export default function ProductsPage() {
       {/* Generated descriptions list */}
       {generated.length > 0 && (
         <div className="space-y-4">
-          <h2 className="font-semibold text-slate-800">Generadas esta sesión ({generated.length})</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-slate-800 dark:text-slate-100">Generadas esta sesión ({generated.length})</h2>
+            <button onClick={handleExportCSV} className="btn-secondary text-xs">
+              ⬇ Exportar CSV
+            </button>
+          </div>
           {generated.map((item, idx) => (
             <DescriptionCard key={idx} item={item} />
           ))}
@@ -214,11 +244,11 @@ function DescriptionCard({ item }: { item: GeneratedItem }) {
   return (
     <div className="card overflow-hidden">
       <button
-        className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 transition-colors"
+        className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
         onClick={() => setExpanded((e) => !e)}
       >
         <div>
-          <p className="font-medium text-slate-800">{item.result.title}</p>
+          <p className="font-medium text-slate-800 dark:text-slate-100">{item.result.title}</p>
           <p className="text-xs text-slate-400 mt-0.5">
             {item.timestamp.toLocaleTimeString()} •{' '}
             <span className="text-blue-600">{item.result.tokens.total} tokens</span> •{' '}
@@ -229,12 +259,15 @@ function DescriptionCard({ item }: { item: GeneratedItem }) {
       </button>
 
       {expanded && (
-        <div className="border-t border-slate-100 p-5 space-y-4">
+        <div className="border-t border-slate-100 dark:border-slate-700 p-5 space-y-4">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
-              Meta Descripción
-            </p>
-            <p className="text-sm text-slate-700 bg-blue-50 p-3 rounded-lg border border-blue-100">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Meta Descripción
+              </p>
+              <CopyButton text={item.result.meta_description} />
+            </div>
+            <p className="text-sm text-slate-700 dark:text-slate-200 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800">
               {item.result.meta_description}
             </p>
             <p className="text-xs text-slate-400 mt-1">
@@ -243,21 +276,24 @@ function DescriptionCard({ item }: { item: GeneratedItem }) {
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
-              Descripción Completa
-            </p>
-            <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Descripción Completa
+              </p>
+              <CopyButton text={item.result.full_description} />
+            </div>
+            <p className="text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
               {item.result.full_description}
             </p>
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
               Puntos Destacados
             </p>
             <ul className="space-y-1">
               {item.result.bullet_points.map((b, i) => (
-                <li key={i} className="flex gap-2 text-sm text-slate-700">
+                <li key={i} className="flex gap-2 text-sm text-slate-700 dark:text-slate-200">
                   <span className="text-blue-500 mt-0.5">•</span>
                   {b}
                 </li>
@@ -266,14 +302,14 @@ function DescriptionCard({ item }: { item: GeneratedItem }) {
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
               Palabras Clave
             </p>
             <div className="flex flex-wrap gap-2">
               {item.result.keywords.map((kw, i) => (
                 <span
                   key={i}
-                  className="text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-200"
+                  className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-600"
                 >
                   {kw}
                 </span>

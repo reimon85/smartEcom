@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import NavLinks from '@/components/ui/NavLinks';
+import DemoBanner from '@/components/ui/DemoBanner';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -8,18 +9,11 @@ export const metadata: Metadata = {
   description: 'AI automation pipeline for e-commerce operations',
 };
 
-const navItems = [
-  { href: '/', label: 'Dashboard', icon: '◈' },
-  { href: '/products', label: 'Descripciones', icon: '✦' },
-  { href: '/reviews', label: 'Reseñas', icon: '✉' },
-  { href: '/alerts', label: 'Alertas de Stock', icon: '⚡' },
-  { href: '/categorization', label: 'Categorización', icon: '◉' },
-];
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" suppressHydrationWarning>
       <body className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        <DemoBanner />
         <div className="flex min-h-screen">
           {/* Sidebar */}
           <aside className="w-64 bg-slate-900 text-white flex flex-col flex-shrink-0">
@@ -39,16 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="flex justify-end mb-2 px-1">
                 <ThemeToggle />
               </div>
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-sm font-medium group"
-                >
-                  <span className="text-base opacity-70 group-hover:opacity-100">{item.icon}</span>
-                  {item.label}
-                </Link>
-              ))}
+              <NavLinks />
             </nav>
 
             <div className="p-4 border-t border-slate-700">
